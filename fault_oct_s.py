@@ -3,11 +3,11 @@ import pandas as pd
 import plotly.graph_objects as go
 import matplotlib
 import numpy as np
-import seaborn as sns
 import streamlit as st
 from matplotlib.backends.backend_agg import RendererAgg
-# matplotlib.use('agg')
-# sns.set_style('darkgrid')
+matplotlib.use('agg')
+
+
 _lock = RendererAgg.lock
 
 # ------set page layout------
