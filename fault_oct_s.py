@@ -11,7 +11,7 @@ matplotlib.use('agg')
 _lock = RendererAgg.lock
 
 # ------set page layout------
-st.set_page_config(page_title='Faults Dashboard',
+st.set_page_config(page_title='iSMM Dashboard',
                    page_icon = ':chart_with_upwards_trend:',
                    layout='wide')
 
@@ -65,7 +65,7 @@ df2 = df2.query(
 # ------Main Page------
 st.title(':bar_chart:Dashboard Fault Oct 2021')
 st.markdown(
-    'Welcome to this Analysis App. This is the web app for Fault module on Oct 2021, get more detail at [here](https://ismm.sg/ce/login)')
+    'Welcome to this Analysis App. This is the web app for Fault module on Oct 2021, get more detail from :point_right: [iSMM](https://ismm.sg/ce/login)')
 st.markdown('##')
 
 # ------Top KPI's------
@@ -425,7 +425,7 @@ with fig20, _lock:
     fig20 = go.Figure(data=[go.Bar(x=ser_fig20.values, y=ser_fig20.index, orientation='h')])
     fig20.update_xaxes(title_text="Number of Fault", tickangle=-45, title_font_color='#6d5acf', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
-    fig20.update_yaxes(title_text='Level', title_font_color='##6d5acf', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
+    fig20.update_yaxes(title_text='Level', title_font_color='#6d5acf', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
     fig20.update_traces(marker_color='#6d5acf', marker_line_color='#6d5acf', marker_line_width=1)
     fig20.update_layout(title='Number of Fault vs Level-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig20, use_container_width=True)
