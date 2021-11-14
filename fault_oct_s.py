@@ -448,10 +448,10 @@ with fig22, _lock:
     fig22.update_layout(title='Total Time Spent to Recovered(hrs) vs Level-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig22, use_container_width=True)
 
-hide_menu_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    </style>
-    """
-st.markdown(hide_menu_style, unsafe_allow_html=True)
+# hide_menu_style = """
+#     <style>
+#     #MainMenu {visibility: hidden;}
+#     footer {visibility: hidden;}
+#     </style>
+#     """
+# st.markdown(hide_menu_style, unsafe_allow_html=True)
