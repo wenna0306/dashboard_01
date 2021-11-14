@@ -14,7 +14,7 @@ _lock = RendererAgg.lock
 st.set_page_config(page_title='iSMM Dashboard',
                    page_icon = ':chart_with_upwards_trend:',
                    layout='wide',
-                   initial_sidebar_state='expanded')
+                   initial_sidebar_state='collapsed')
 
 # ------DataFrame------
 def fetch_file(filename):
