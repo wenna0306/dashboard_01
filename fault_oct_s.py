@@ -423,10 +423,10 @@ with fig19, _lock:
 
 with fig20, _lock:
     fig20 = go.Figure(data=[go.Bar(x=ser_fig20.values, y=ser_fig20.index, orientation='h')])
-    fig20.update_xaxes(title_text="Number of Fault", tickangle=-45, title_font_color='#516572', showgrid=True, gridwidth=0.1,
+    fig20.update_xaxes(title_text="Number of Fault", tickangle=-45, title_font_color='#6d5acf', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
-    fig20.update_yaxes(title_text='Level', title_font_color='#516572', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
-    fig20.update_traces(marker_color='#516572', marker_line_color='#516572', marker_line_width=1)
+    fig20.update_yaxes(title_text='Level', title_font_color='##6d5acf', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
+    fig20.update_traces(marker_color='#6d5acf', marker_line_color='#6d5acf', marker_line_width=1)
     fig20.update_layout(title='Number of Fault vs Level-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig20, use_container_width=True)
 
