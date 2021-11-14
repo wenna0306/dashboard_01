@@ -412,7 +412,7 @@ ser_fig20 = df11['Fault_Recovered_count'].sort_values().tail(10)
 ser_fig21 = df11['Fault_Recovered_mean(hrs)'].sort_values().tail(10)
 ser_fig22 = df11['Fault_Recovered_sum(hrs)'].sort_values().tail(10)
 
-fig19, fig20, fig21, fig22 = st.columns(4)
+fig19, fig20 = st.columns(2)
 with fig19, _lock:
     fig19 = go.Figure(data=[go.Bar(x=ser_fig19.values, y=ser_fig19.index, orientation='h')])
     fig19.update_xaxes(title_text="Number of Fault", title_font_color='#728f02', showgrid=True,
@@ -424,16 +424,17 @@ with fig19, _lock:
 
 with fig20, _lock:
     fig20 = go.Figure(data=[go.Bar(x=ser_fig20.values, y=ser_fig20.index, orientation='h')])
-    fig20.update_xaxes(title_text="Number of Fault", tickangle=-45, title_font_color='#516572', showgrid=True, gridwidth=0.1,
+    fig20.update_xaxes(title_text="Number of Fault", title_font_color='#516572', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig20.update_yaxes(title_text='Level', title_font_color='#516572', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
     fig20.update_traces(marker_color='#516572', marker_line_color='#516572', marker_line_width=1)
     fig20.update_layout(title='Number of Fault vs Level-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig20, use_container_width=True)
 
+fig21, fig22 = st.columns(2)
 with fig21, _lock:
     fig21 = go.Figure(data=[go.Bar(x=ser_fig21.values, y=ser_fig21.index, orientation='h')])
-    fig21.update_xaxes(title_text="Mean Time Spent", tickangle=-45, title_font_color='#efc0fe', showgrid=True, gridwidth=0.1,
+    fig21.update_xaxes(title_text="Mean Time Spent", title_font_color='#efc0fe', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig21.update_yaxes(title_text='Level', title_font_color='#efc0fe', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
     fig21.update_traces(marker_color='#efc0fe', marker_line_color='#efc0fe', marker_line_width=1)
@@ -442,7 +443,7 @@ with fig21, _lock:
 
 with fig22, _lock:
     fig22 = go.Figure(data=[go.Bar(x=ser_fig22.values, y=ser_fig22.index, orientation='h')])
-    fig22.update_xaxes(title_text="Total Time Spent", tickangle=-45, title_font_color='#c7ac7d', showgrid=True, gridwidth=0.1,
+    fig22.update_xaxes(title_text="Total Time Spent", title_font_color='#c7ac7d', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig22.update_yaxes(title_text='Level', title_font_color='#c7ac7d', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
     fig22.update_traces(marker_color='#c7ac7d', marker_line_color='#c7ac7d', marker_line_width=1)
