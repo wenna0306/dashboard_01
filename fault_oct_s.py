@@ -237,7 +237,7 @@ with fig07, _lock:
     fig07.update_yaxes(title_text='Count(Acknowledged)', title_font_color='#fe86a4', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig07.update_traces(marker_color='#fe86a4', marker_line_color='#fe86a4', marker_line_width=1)
-    fig07.update_layout(title='Count(Acknowledged)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig07.update_layout(title='Count(Acknowledged)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig07, use_container_width=True)
 
 with fig08, _lock:
@@ -247,7 +247,7 @@ with fig08, _lock:
     fig08.update_yaxes(title_text='Mean Time Spent', title_font_color='#a55af4', showgrid=True, gridwidth=0.1,
                            gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig08.update_traces(marker_color='#a55af4', marker_line_color='#a55af4', marker_line_width=1)
-    fig08.update_layout(title='Mean Time Spent to Acknowledged(hrs)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig08.update_layout(title='Mean Time Spent to Acknowledged(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig08, use_container_width=True)
 
 with fig09, _lock:
@@ -257,7 +257,7 @@ with fig09, _lock:
     fig09.update_yaxes(title_text='Total Time Spent', title_font_color='#087871', showgrid=True, gridwidth=0.1,
                            gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig09.update_traces(marker_color='#087871', marker_line_color='#087871', marker_line_width=1)
-    fig09.update_layout(title='Total Time Spent to Acknowledged(hrs)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig09.update_layout(title='Total Time Spent to Acknowledged(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig09, use_container_width=True)
 
 x_fig10 = df_fig10.Trade_Category
@@ -275,7 +275,7 @@ with fig10, _lock:
     fig10.update_yaxes(title_text='Count(Recovered)', title_font_color='#50a747', showgrid=True, gridwidth=0.1,
                            gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig10.update_traces(marker_color='#50a747', marker_line_color='#50a747', marker_line_width=1)
-    fig10.update_layout(title='Count(Recovered)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig10.update_layout(title='Count(Recovered)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig10, use_container_width=True)
 
 with fig11, _lock:
@@ -285,7 +285,7 @@ with fig11, _lock:
     fig11.update_yaxes(title_text='Mean Time Spent', title_font_color='#929901', showgrid=True, gridwidth=0.1,
                            gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig11.update_traces(marker_color='#929901', marker_line_color='#929901', marker_line_width=1)
-    fig11.update_layout(title='Mean Time Spent to Recovered(hrs)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig11.update_layout(title='Mean Time Spent to Recovered(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig11, use_container_width=True)
 
 with fig12, _lock:
@@ -295,7 +295,7 @@ with fig12, _lock:
     fig12.update_yaxes(title_text='Total Time Spent', title_font_color='#ff9408', showgrid=True, gridwidth=0.1,
                            gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig12.update_traces(marker_color='#ff9408', marker_line_color='#ff9408', marker_line_width=1)
-    fig12.update_layout(title='Total Time Spent to Recovered(hrs)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig12.update_layout(title='Total Time Spent to Recovered(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig12, use_container_width=True)
 
 st.markdown('---')
@@ -334,7 +334,7 @@ with fig13, _lock:
     fig13.update_yaxes(title_text='Count(Acknowledged)', title_font_color='#3778bf', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig13.update_traces(marker_color='#3778bf', marker_line_color='#3778bf', marker_line_width=1)
-    fig13.update_layout(title='Count(Acknowledged)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig13.update_layout(title='Count(Acknowledged)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig13, use_container_width=True)
 
 with fig14, _lock:
@@ -344,7 +344,7 @@ with fig14, _lock:
     fig14.update_yaxes(title_text='Mean Time Spent', title_font_color='#20f986', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig14.update_traces(marker_color='#20f986', marker_line_color='#20f986', marker_line_width=1)
-    fig14.update_layout(title='Mean Time Spent to Acknowledged(hrs)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig14.update_layout(title='Mean Time Spent to Acknowledged(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig14, use_container_width=True)
 
 with fig15, _lock:
@@ -354,7 +354,7 @@ with fig15, _lock:
     fig15.update_yaxes(title_text='Total Time Spent', title_font_color='#cbf85f', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig15.update_traces(marker_color='#cbf85f', marker_line_color='#cbf85f', marker_line_width=1)
-    fig15.update_layout(title='Total Time Spent to Acknowledged(hrs)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig15.update_layout(title='Total Time Spent to Acknowledged(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig15, use_container_width=True)
 
 x_fig16 = df_fig16.Type_of_Fault
@@ -372,7 +372,7 @@ with fig16, _lock:
     fig16.update_yaxes(title_text='Count(Recovered)', title_font_color='#a8ff04', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig16.update_traces(marker_color='#a8ff04', marker_line_color='#a8ff04', marker_line_width=1)
-    fig16.update_layout(title='Count(Recovered)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig16.update_layout(title='Count(Recovered)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig16, use_container_width=True)
 
 with fig17, _lock:
@@ -382,7 +382,7 @@ with fig17, _lock:
     fig17.update_yaxes(title_text='Mean Time Spent', title_font_color='#ff796c', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig17.update_traces(marker_color='#ff796c', marker_line_color='#ff796c', marker_line_width=1)
-    fig17.update_layout(title='Mean Time Spent to Recovered(hrs)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig17.update_layout(title='Mean Time Spent to Recovered(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig17, use_container_width=True)
 
 with fig18, _lock:
@@ -392,7 +392,7 @@ with fig18, _lock:
     fig18.update_yaxes(title_text='Total Time Spent', title_font_color='#c071fe', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig18.update_traces(marker_color='#c071fe', marker_line_color='#c071fe', marker_line_width=1)
-    fig18.update_layout(title='Total Time Spent to Recovered(hrs)-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig18.update_layout(title='Total Time Spent to Recovered(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig18, use_container_width=True)
 
 st.markdown('---')
@@ -428,7 +428,7 @@ with fig20, _lock:
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig20.update_yaxes(title_text='Level', title_font_color='#516572', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
     fig20.update_traces(marker_color='#516572', marker_line_color='#516572', marker_line_width=1)
-    fig20.update_layout(title='Number of Fault vs Level-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig20.update_layout(title='Number of Fault vs Level-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig20, use_container_width=True)
 
 with fig21, _lock:
@@ -437,7 +437,7 @@ with fig21, _lock:
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig21.update_yaxes(title_text='Level', title_font_color='#efc0fe', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
     fig21.update_traces(marker_color='#efc0fe', marker_line_color='#efc0fe', marker_line_width=1)
-    fig21.update_layout(title='Mean Time Spent to Recovered(hrs) vs Level-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig21.update_layout(title='Mean Time Spent to Recovered(hrs) vs Level-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig21, use_container_width=True)
 
 with fig22, _lock:
@@ -446,7 +446,7 @@ with fig22, _lock:
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig22.update_yaxes(title_text='Level', title_font_color='#c7ac7d', showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
     fig22.update_traces(marker_color='#c7ac7d', marker_line_color='#c7ac7d', marker_line_width=1)
-    fig22.update_layout(title='Total Time Spent to Recovered(hrs) vs Level-**Top 10**', plot_bgcolor='rgba(0,0,0,0)')
+    fig22.update_layout(title='Total Time Spent to Recovered(hrs) vs Level-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig22, use_container_width=True)
 
 hide_menu_style = """
