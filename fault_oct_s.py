@@ -121,6 +121,41 @@ with dataframe02, _lock:
         axis=0, props='color:white; font-weight:bold; background-color:darkblue;'))
 
 st.markdown('---')
+st.subheader('Outstanding Fault')
+
+df_outstanding = df2.loc[(df2['Cancel_Status'].isna()) & (df2['Work_Completed_Date'].isna()),:]
+ser_outstanding_building = df_outstanding.groupby(['Building_Trade'])['Type_of_Fault'].count().sort_values(ascending=False)
+ser_outstanding_category = df_outstanding.groupby(['Trade_Category'])['Type_of_Fault'].count().sort_values(ascending=False)
+
+x_outstanding_building = ser_outstanding_building.index
+y_outstanding_building = ser_outstanding_building.values
+x_outstanding_category = ser_outstanding_category.index
+y_outstanding_category = ser_outstanding_category.values
+
+fig_outstanding_building, fig_outstanding_category = st.columns(2)
+
+with fig_outstanding_building, _lock:
+    fig_outstanding_building = go.Figure(data=[go.Bar(x=x_outstanding_building, y=y_outstanding_building, orientation='v', text=y_outstanding_building)])
+    fig_outstanding_building.update_xaxes(title_text="Building Trade", tickangle=-45, title_font_color='#8fb67b', showgrid=False,
+                       showline=True, linewidth=1, linecolor='#59656d')
+    fig_outstanding_building.update_yaxes(title_text='Number of Fault', title_font_color='#8fb67b', showgrid=True, gridwidth=0.1,
+                       gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
+    fig_outstanding_building.update_traces(marker_color='#8fb67b', marker_line_color='#8fb67b', marker_line_width=1)
+    fig_outstanding_building.update_layout(title='Number of Fault vs Building Trade', plot_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig_outstanding_building, use_container_width=True)
+
+with fig_outstanding_category, _lock:
+    fig_outstanding_category = go.Figure(data=[go.Bar(x=x_outstanding_category, y=y_outstanding_category, orientation='v', text=y_outstanding_category)])
+    fig_outstanding_category.update_xaxes(title_text="Trade Category", tickangle=-45, title_font_color='#4c9085', showgrid=False,
+                       showline=True, linewidth=1, linecolor='#59656d')
+    fig_outstanding_category.update_yaxes(title_text='Number of Fault', title_font_color='#4c9085', showgrid=True, gridwidth=0.1,
+                       gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
+    fig_outstanding_category.update_traces(marker_color='#4c9085', marker_line_color='#4c9085', marker_line_width=1)
+    fig_outstanding_category.update_layout(title='Number of Fault vs Trade Category', plot_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig_outstanding_category, use_container_width=True)
+
+
+st.markdown('---')
 st.subheader('Resource Allocation/Performance Monitoring Based on Building Trade-Tier 1')
 
 df3['Time_Acknowledged_hrs'] = df3.Time_Acknowledged_mins/60
