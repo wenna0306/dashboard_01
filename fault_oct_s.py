@@ -40,7 +40,6 @@ df['Time_Work_Started_mins'] = (df.Work_Started_Date - df.Reported_Date)/pd.Time
 df['Time_Work_Recovered_mins'] = (df.Work_Completed_Date - df.Reported_Date)/pd.Timedelta(minutes=1)
 
 df1 = df.Location.str.split(pat=' > ', expand=True, n=3).rename(columns={0:'Site', 1:'Building', 2:'Level'})
-
 df2 = pd.concat([df, df1], axis=1)
 
 # ------Sidebar------
@@ -64,7 +63,7 @@ df2 = df2.query(
 # st.dataframe(df_selection)
 
 # ------Main Page------
-st.title(':bar_chart:Dashboard Fault Oct 2021')
+st.title(':bar_chart: Dashboard Fault Oct 2021')
 st.markdown(
     'Welcome to this Analysis App. This is the web app for Fault module on Oct 2021, get more detail from :point_right: [iSMM](https://ismm.sg/ce/login)')
 st.markdown('##')
@@ -94,7 +93,55 @@ with column04, _lock:
     st.markdown(f"<h2 style='text-align: left; color: #4da409;'>{fault_recovered}</h2>", unsafe_allow_html=True)
 
 st.markdown('---')
-#------calculation of df in jupyterlab and plot here------
+st.subheader('Outstanding Fault')
+
+df_outstanding = df2.loc[(df2['Cancel_Status'].isna()) & (df2['Work_Completed_Date'].isna()),:]
+ser_outstanding_building = df_outstanding.groupby(['Building_Trade'])['Type_of_Fault'].count().sort_values(ascending=False)
+ser_outstanding_category = df_outstanding.groupby(['Trade_Category'])['Type_of_Fault'].count().sort_values(ascending=False)
+
+x_outstanding_building = ser_outstanding_building.index
+y_outstanding_building = ser_outstanding_building.values
+x_outstanding_category = ser_outstanding_category.index
+y_outstanding_category = ser_outstanding_category.values
+
+fig_outstanding_building, fig_outstanding_category = st.columns([1, 2])
+
+with fig_outstanding_building, _lock:
+    fig_outstanding_building = go.Figure(data=[go.Pie(labels=x_outstanding_building, values=y_outstanding_building, hoverinfo='all', textinfo='label+percent+value', textfont_size=15, textfont_color='white', textposition='inside', showlegend=False, hole=.4)])
+    fig_outstanding_building.update_layout(title='Number of Fault vs Building Trade', annotations=[dict(text='Outstanding', x=0.5, y=0.5, font_size=18, showarrow=False)])
+    st.plotly_chart(fig_outstanding_building, use_container_width=True)
+
+with fig_outstanding_category, _lock:
+    fig_outstanding_category = go.Figure(data=[go.Bar(x=x_outstanding_category, y=y_outstanding_category, orientation='v', text=y_outstanding_category)])
+    fig_outstanding_category.update_xaxes(title_text="Trade Category", tickangle=-45, title_font_color='#4c9085', showgrid=False,
+                       showline=True, linewidth=1, linecolor='#59656d')
+    fig_outstanding_category.update_yaxes(title_text='Number of Fault', title_font_color='#4c9085', showgrid=True, gridwidth=0.1,
+                       gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
+    fig_outstanding_category.update_traces(marker_color='#4c9085', marker_line_color='#4c9085', marker_line_width=1)
+    fig_outstanding_category.update_layout(title='Number of Fault vs Trade Category', plot_bgcolor='rgba(0,0,0,0)')
+    st.plotly_chart(fig_outstanding_category, use_container_width=True)
+
+st.markdown('---')
+
+st.subheader('Number of Fault vs Date')
+df_daily = df2.loc[(df2['Cancel_Status'].isna()) & (df2['Work_Completed_Date'].notna()),:]
+
+x_daily = df_daily.Reported_Date.dt.day.value_counts().sort_index().index
+y_daily = df_daily.Reported_Date.dt.day.value_counts().sort_index().values
+y_mean = df_daily.Reported_Date.dt.day.value_counts().sort_index().mean()
+
+fig_daily = go.Figure(data=go.Scatter(x=x_daily, y=y_daily, mode='lines+markers', line=dict(color='#13bbaf', width=4)))
+fig_daily.add_hline(y=y_mean, line_dash='dot', line_color='#96ae8d', line_width=2, annotation_text='Average Line',
+              annotation_position='bottom right', annotation_font_size=18, annotation_font_color='green')
+fig_daily.update_xaxes(title_text='Date', tickangle=-45, title_font_color='#74a662', tickmode='linear', range=[1, 31],
+                       showgrid=False, showline=True, linewidth=1, linecolor='#59656d')
+fig_daily.update_yaxes(title_text='Number of Fault', title_font_color='#74a662', tickmode='linear', showgrid=False,
+                       gridwidth=0.1, gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
+fig_daily.update_layout(title = 'Number of Fault vs Date', plot_bgcolor='rgba(0, 0, 0, 0)')
+st.plotly_chart(fig_daily, use_container_width=True)
+
+st.markdown('---')
+
 df3 = df2.loc[(df2['Cancel_Status'].isna()) & (df2['Work_Completed_Date'].notna()),:]
 cols_drop = ['Impact', 'Cancel_Status', 'Other_Trades_Required_Date', 'Cost_Cap_Exceed_Date', 'Assistance_Requested_Date',
              'Fault_Reference', 'End_User_Priority', 'Incident_Report', 'Location', 'Reported_Date', 'Fault_Acknowledged_Date',
@@ -102,16 +149,20 @@ cols_drop = ['Impact', 'Cancel_Status', 'Other_Trades_Required_Date', 'Cost_Cap_
 df3.drop(columns=cols_drop, inplace=True)
 df3 = df3[['Site', 'Building', 'Level', 'Building_Trade', 'Trade_Category', 'Type_of_Fault', 'Time_Acknowledged_mins',
            'Time_Site_Reached_mins', 'Time_Work_Started_mins', 'Time_Work_Recovered_mins']]
+
 bin_responded = [0, 10, 30, 60, np.inf]
 label_responded = ['0-10mins', '10-30mins', '30-60mins', '60-np.inf']
 
 bin_recovered = [0, 60, 240, 480, np.inf]
 label_recovered = ['0-1hr', '1-4hrs', '4-8hrs', '8-np.inf']
 
-df3['KPI_For_Responded'] = pd.cut(df3.Time_Acknowledged_mins, bins=bin_responded, labels=label_responded, include_lowest=True)
+df3['KPI_For_Responded'] = pd.cut(df3.Time_Site_Reached_mins, bins=bin_responded, labels=label_responded, include_lowest=True)
 df3['KPI_For_Recovered'] = pd.cut(df3.Time_Work_Recovered_mins, bins=bin_recovered, labels=label_recovered, include_lowest=True)
 
 st.subheader('KPI Monitoring (Responded)')
+st.markdown('Response Time refers to the time the fault or emergency was reported to the time the Contractor arrived on-site with evidence')
+st.markdown('##')
+
 space01, dataframe01, space02, dataframe02, space03 = st.columns((.1, 1, .1, 2, .1))
 with dataframe01, _lock:
     st.markdown('KPI (Responded) vs Building Trade')
@@ -233,36 +284,6 @@ with fig_recovered_category, _lock:
     st.plotly_chart(fig_recovered_category, use_container_width=True)
 
 st.markdown('---')
-st.subheader('Outstanding Fault')
-
-df_outstanding = df2.loc[(df2['Cancel_Status'].isna()) & (df2['Work_Completed_Date'].isna()),:]
-ser_outstanding_building = df_outstanding.groupby(['Building_Trade'])['Type_of_Fault'].count().sort_values(ascending=False)
-ser_outstanding_category = df_outstanding.groupby(['Trade_Category'])['Type_of_Fault'].count().sort_values(ascending=False)
-
-x_outstanding_building = ser_outstanding_building.index
-y_outstanding_building = ser_outstanding_building.values
-x_outstanding_category = ser_outstanding_category.index
-y_outstanding_category = ser_outstanding_category.values
-
-fig_outstanding_building, fig_outstanding_category = st.columns([1, 2])
-
-with fig_outstanding_building, _lock:
-    fig_outstanding_building = go.Figure(data=[go.Pie(labels=x_outstanding_building, values=y_outstanding_building, hoverinfo='all', textinfo='label+percent+value', textfont_size=15, textfont_color='white', textposition='inside', showlegend=False)])
-    fig_outstanding_building.update_layout(title='Number of Fault vs Building Trade', plot_bgcolor='rgba(0,0,0,0)')
-    st.plotly_chart(fig_outstanding_building, use_container_width=True)
-
-with fig_outstanding_category, _lock:
-    fig_outstanding_category = go.Figure(data=[go.Bar(x=x_outstanding_category, y=y_outstanding_category, orientation='v', text=y_outstanding_category)])
-    fig_outstanding_category.update_xaxes(title_text="Trade Category", tickangle=-45, title_font_color='#4c9085', showgrid=False,
-                       showline=True, linewidth=1, linecolor='#59656d')
-    fig_outstanding_category.update_yaxes(title_text='Number of Fault', title_font_color='#4c9085', showgrid=True, gridwidth=0.1,
-                       gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
-    fig_outstanding_category.update_traces(marker_color='#4c9085', marker_line_color='#4c9085', marker_line_width=1)
-    fig_outstanding_category.update_layout(title='Number of Fault vs Trade Category', plot_bgcolor='rgba(0,0,0,0)')
-    st.plotly_chart(fig_outstanding_category, use_container_width=True)
-
-
-st.markdown('---')
 st.subheader('Recovered Fault vs Building Trade-Tier 1 (Resource Allocation/Performance Monitoring)')
 
 df3['Time_Acknowledged_hrs'] = df3.Time_Acknowledged_mins/60
@@ -283,22 +304,22 @@ cols_name = ['Fault_Acknowledged_count', 'Fault_Acknowledged_max(hrs)', 'Fault_A
                'Fault_Work_Started_min(hrs)', 'Fault_Work_Started_mean(hrs)', 'Fault_Work_Started_sum(hrs)', 'Fault_Recovered_count',
                'Fault_Recovered_max(hrs)', 'Fault_Recovered_min(hrs)', 'Fault_Recovered_mean(hrs)', 'Fault_Recovered_sum(hrs)']
 df5.columns = cols_name
-df6 = df5.loc[:, ['Fault_Acknowledged_count', 'Fault_Acknowledged_mean(hrs)', 'Fault_Acknowledged_sum(hrs)',
+df6 = df5.loc[:, ['Fault_Site_Reached_count', 'Fault_Site_Reached_mean(hrs)', 'Fault_Site_Reached_sum(hrs)',
               'Fault_Recovered_count', 'Fault_Recovered_mean(hrs)', 'Fault_Recovered_sum(hrs)']]
 df6.reset_index(inplace=True)
 
 x = df6['Building_Trade']
-y1 = df6.Fault_Acknowledged_count
-y2 = df6['Fault_Acknowledged_mean(hrs)']
-y3 = df6['Fault_Acknowledged_sum(hrs)']
+y1 = df6.Fault_Site_Reached_count
+y2 = df6['Fault_Site_Reached_mean(hrs)']
+y3 = df6['Fault_Site_Reached_sum(hrs)']
 y4 = df6.Fault_Recovered_count
 y5 = df6['Fault_Recovered_mean(hrs)']
 y6 = df6['Fault_Recovered_sum(hrs)']
 
 fig01, fig02, fig03 = st.columns(3)
 with fig01, _lock:
-    fig01 = go.Figure(data=[go.Pie(values=y1, labels=x, hoverinfo='all', textinfo='label+percent+value', textfont_size=15, textfont_color='white', textposition='inside', showlegend=False)])
-    fig01.update_layout(title='Proportions of Building Trade(Acknowledged)')
+    fig01 = go.Figure(data=[go.Pie(values=y1, labels=x, hoverinfo='all', textinfo='label+percent+value', textfont_size=15, textfont_color='white', textposition='inside', showlegend=False, hole=.4)])
+    fig01.update_layout(title='Proportions of Building Trade(Responded)', annotations=[dict(text='Responded', x=0.5, y=0.5, font_size=18, showarrow=False)])
     st.plotly_chart(fig01, use_container_width=True)
 
 with fig02, _lock:
@@ -307,7 +328,7 @@ with fig02, _lock:
     fig02.update_yaxes(title_text='Mean Time Spent', title_font_color='#f8481c', showgrid=True, gridwidth=0.1, gridcolor='#1f3b4d',
                        showline=True, linewidth=1, linecolor='#59656d')
     fig02.update_traces(marker_color='#f8481c', marker_line_color='#f8481c', marker_line_width=1)
-    fig02.update_layout(title='Mean Time Spent to Acknowledged(hrs)', plot_bgcolor='rgba(0,0,0,0)')
+    fig02.update_layout(title='Mean Time Spent to Responded(hrs)', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig02, use_container_width=True)
 
 with fig03, _lock:
@@ -316,13 +337,13 @@ with fig03, _lock:
     fig03.update_yaxes(title_text='Total Time Spent', title_font_color='#2afeb7', showgrid=True, gridwidth=0.1, gridcolor='#1f3b4d',
                        showline=True, linewidth=1, linecolor='#59656d')
     fig03.update_traces(marker_color='#2afeb7', marker_line_color='#2afeb7', marker_line_width=1)
-    fig03.update_layout(title='Total Time Spent to Acknowledged(hrs)', plot_bgcolor='rgba(0,0,0,0)')
+    fig03.update_layout(title='Total Time Spent to Responded(hrs)', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig03, use_container_width=True)
 
 fig04, fig05, fig06 = st.columns(3)
 with fig04, _lock:
-    fig04 = go.Figure(data=[go.Pie(values=y4, labels=x, hoverinfo='all', textinfo='label+percent+value', textfont_size=15, textfont_color='white', textposition='inside', showlegend=False)])
-    fig04.update_layout(title='Proportions of Building Trade(Recovered)')
+    fig04 = go.Figure(data=[go.Pie(values=y4, labels=x, hoverinfo='all', textinfo='label+percent+value', textfont_size=15, textfont_color='white', textposition='inside', showlegend=False, hole=.4)])
+    fig04.update_layout(title='Proportions of Building Trade(Recovered)', annotations=[dict(text='Recovered', x=0.5, y=0.5, font_size=18, showarrow=False)])
     st.plotly_chart(fig04, use_container_width=True)
 
 with fig05, _lock:
@@ -353,33 +374,33 @@ cols_name01 = ['Fault_Acknowledged_count', 'Fault_Acknowledged_max(hrs)', 'Fault
                'Fault_Work_Started_min(hrs)', 'Fault_Work_Started_mean(hrs)', 'Fault_Work_Started_sum(hrs)', 'Fault_Recovered_count',
                'Fault_Recovered_max(hrs)', 'Fault_Recovered_min(hrs)', 'Fault_Recovered_mean(hrs)', 'Fault_Recovered_sum(hrs)']
 df7.columns = cols_name01
-df8 = df7.loc[:, ['Fault_Acknowledged_count', 'Fault_Acknowledged_mean(hrs)', 'Fault_Acknowledged_sum(hrs)',
+df8 = df7.loc[:, ['Fault_Site_Reached_count', 'Fault_Site_Reached_mean(hrs)', 'Fault_Site_Reached_sum(hrs)',
              'Fault_Recovered_count', 'Fault_Recovered_mean(hrs)', 'Fault_Recovered_sum(hrs)']]
 df8.reset_index(inplace=True)
 
-df_fig07 = df8.loc[:, ['Trade_Category', 'Fault_Acknowledged_count']].sort_values('Fault_Acknowledged_count', ascending=False).head(10)
-df_fig08 = df8.loc[:, ['Trade_Category', 'Fault_Acknowledged_mean(hrs)']].sort_values('Fault_Acknowledged_mean(hrs)', ascending=False).head(10)
-df_fig09 = df8.loc[:, ['Trade_Category', 'Fault_Acknowledged_sum(hrs)']].sort_values('Fault_Acknowledged_sum(hrs)', ascending=False).head(10)
+df_fig07 = df8.loc[:, ['Trade_Category', 'Fault_Site_Reached_count']].sort_values('Fault_Site_Reached_count', ascending=False).head(10)
+df_fig08 = df8.loc[:, ['Trade_Category', 'Fault_Site_Reached_mean(hrs)']].sort_values('Fault_Site_Reached_mean(hrs)', ascending=False).head(10)
+df_fig09 = df8.loc[:, ['Trade_Category', 'Fault_Site_Reached_sum(hrs)']].sort_values('Fault_Site_Reached_sum(hrs)', ascending=False).head(10)
 df_fig10 = df8.loc[:, ['Trade_Category', 'Fault_Recovered_count']].sort_values('Fault_Recovered_count', ascending=False).head(10)
 df_fig11 = df8.loc[:, ['Trade_Category', 'Fault_Recovered_mean(hrs)']].sort_values('Fault_Recovered_mean(hrs)', ascending=False).head(10)
 df_fig12 = df8.loc[:, ['Trade_Category', 'Fault_Recovered_sum(hrs)']].sort_values('Fault_Recovered_sum(hrs)', ascending=False).head(10)
 
 x_fig07 = df_fig07.Trade_Category
-y_fig07 = df_fig07['Fault_Acknowledged_count']
+y_fig07 = df_fig07['Fault_Site_Reached_count']
 x_fig08 = df_fig08.Trade_Category
-y_fig08 = df_fig08['Fault_Acknowledged_mean(hrs)']
+y_fig08 = df_fig08['Fault_Site_Reached_mean(hrs)']
 x_fig09 = df_fig09.Trade_Category
-y_fig09 = df_fig09['Fault_Acknowledged_sum(hrs)']
+y_fig09 = df_fig09['Fault_Site_Reached_sum(hrs)']
 
 fig07, fig08, fig09 = st.columns(3)
 with fig07, _lock:
     fig07 = go.Figure(data=[go.Bar(x=x_fig07, y=y_fig07, orientation='v', text=y_fig07)])
     fig07.update_xaxes(title_text="Trade Category", tickangle=-45, title_font_color='#fe86a4', showgrid=False,
                        showline=True, linewidth=1, linecolor='#59656d')
-    fig07.update_yaxes(title_text='Count(Acknowledged)', title_font_color='#fe86a4', showgrid=True, gridwidth=0.1,
+    fig07.update_yaxes(title_text='Count(Responded)', title_font_color='#fe86a4', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig07.update_traces(marker_color='#fe86a4', marker_line_color='#fe86a4', marker_line_width=1)
-    fig07.update_layout(title='Count(Acknowledged)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
+    fig07.update_layout(title='Count(Responded)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig07, use_container_width=True)
 
 with fig08, _lock:
@@ -389,7 +410,7 @@ with fig08, _lock:
     fig08.update_yaxes(title_text='Mean Time Spent', title_font_color='#a55af4', showgrid=True, gridwidth=0.1,
                            gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig08.update_traces(marker_color='#a55af4', marker_line_color='#a55af4', marker_line_width=1)
-    fig08.update_layout(title='Mean Time Spent to Acknowledged(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
+    fig08.update_layout(title='Mean Time Spent to Responded(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig08, use_container_width=True)
 
 with fig09, _lock:
@@ -399,7 +420,7 @@ with fig09, _lock:
     fig09.update_yaxes(title_text='Total Time Spent', title_font_color='#087871', showgrid=True, gridwidth=0.1,
                            gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig09.update_traces(marker_color='#087871', marker_line_color='#087871', marker_line_width=1)
-    fig09.update_layout(title='Total Time Spent to Acknowledged(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
+    fig09.update_layout(title='Total Time Spent to Responded(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig09, use_container_width=True)
 
 x_fig10 = df_fig10.Trade_Category
@@ -450,33 +471,33 @@ cols_name02 = ['Fault_Acknowledged_count', 'Fault_Acknowledged_max(hrs)', 'Fault
                'Fault_Work_Started_min(hrs)', 'Fault_Work_Started_mean(hrs)', 'Fault_Work_Started_sum(hrs)', 'Fault_Recovered_count',
                'Fault_Recovered_max(hrs)', 'Fault_Recovered_min(hrs)', 'Fault_Recovered_mean(hrs)', 'Fault_Recovered_sum(hrs)']
 df9.columns = cols_name02
-df10 = df9.loc[:, ['Fault_Acknowledged_count', 'Fault_Acknowledged_mean(hrs)', 'Fault_Acknowledged_sum(hrs)',
+df10 = df9.loc[:, ['Fault_Site_Reached_count', 'Fault_Site_Reached_mean(hrs)', 'Fault_Site_Reached_sum(hrs)',
              'Fault_Recovered_count', 'Fault_Recovered_mean(hrs)', 'Fault_Recovered_sum(hrs)']]
 df10.reset_index(inplace=True)
 
-df_fig13 = df10.loc[:, ['Type_of_Fault', 'Fault_Acknowledged_count']].sort_values('Fault_Acknowledged_count', ascending=False).head(10)
-df_fig14 = df10.loc[:, ['Type_of_Fault', 'Fault_Acknowledged_mean(hrs)']].sort_values('Fault_Acknowledged_mean(hrs)', ascending=False).head(10)
-df_fig15 = df10.loc[:, ['Type_of_Fault', 'Fault_Acknowledged_sum(hrs)']].sort_values('Fault_Acknowledged_sum(hrs)', ascending=False).head(10)
+df_fig13 = df10.loc[:, ['Type_of_Fault', 'Fault_Site_Reached_count']].sort_values('Fault_Site_Reached_count', ascending=False).head(10)
+df_fig14 = df10.loc[:, ['Type_of_Fault', 'Fault_Site_Reached_mean(hrs)']].sort_values('Fault_Site_Reached_mean(hrs)', ascending=False).head(10)
+df_fig15 = df10.loc[:, ['Type_of_Fault', 'Fault_Site_Reached_sum(hrs)']].sort_values('Fault_Site_Reached_sum(hrs)', ascending=False).head(10)
 df_fig16 = df10.loc[:, ['Type_of_Fault', 'Fault_Recovered_count']].sort_values('Fault_Recovered_count', ascending=False).head(10)
 df_fig17 = df10.loc[:, ['Type_of_Fault', 'Fault_Recovered_mean(hrs)']].sort_values('Fault_Recovered_mean(hrs)', ascending=False).head(10)
 df_fig18 = df10.loc[:, ['Type_of_Fault', 'Fault_Recovered_sum(hrs)']].sort_values('Fault_Recovered_sum(hrs)', ascending=False).head(10)
 
 x_fig13 = df_fig13.Type_of_Fault
-y_fig13 = df_fig13['Fault_Acknowledged_count']
+y_fig13 = df_fig13['Fault_Site_Reached_count']
 x_fig14 = df_fig14.Type_of_Fault
-y_fig14 = df_fig14['Fault_Acknowledged_mean(hrs)']
+y_fig14 = df_fig14['Fault_Site_Reached_mean(hrs)']
 x_fig15 = df_fig15.Type_of_Fault
-y_fig15 = df_fig15['Fault_Acknowledged_sum(hrs)']
+y_fig15 = df_fig15['Fault_Site_Reached_sum(hrs)']
 
 fig13, fig14, fig15 = st.columns(3)
 with fig13, _lock:
     fig13 = go.Figure(data=[go.Bar(x=x_fig13, y=y_fig13, orientation='v', text=y_fig13)])
     fig13.update_xaxes(title_text="Type of Fault", tickangle=-45, title_font_color='#3778bf', showgrid=False,
                        showline=True, linewidth=1, linecolor='#59656d')
-    fig13.update_yaxes(title_text='Count(Acknowledged)', title_font_color='#3778bf', showgrid=True, gridwidth=0.1,
+    fig13.update_yaxes(title_text='Count(Responded)', title_font_color='#3778bf', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig13.update_traces(marker_color='#3778bf', marker_line_color='#3778bf', marker_line_width=1)
-    fig13.update_layout(title='Count(Acknowledged)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
+    fig13.update_layout(title='Count(Responded)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig13, use_container_width=True)
 
 with fig14, _lock:
@@ -486,7 +507,7 @@ with fig14, _lock:
     fig14.update_yaxes(title_text='Mean Time Spent', title_font_color='#20f986', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig14.update_traces(marker_color='#20f986', marker_line_color='#20f986', marker_line_width=1)
-    fig14.update_layout(title='Mean Time Spent to Acknowledged(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
+    fig14.update_layout(title='Mean Time Spent to Responded(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig14, use_container_width=True)
 
 with fig15, _lock:
@@ -496,7 +517,7 @@ with fig15, _lock:
     fig15.update_yaxes(title_text='Total Time Spent', title_font_color='#cbf85f', showgrid=True, gridwidth=0.1,
                        gridcolor='#1f3b4d', showline=True, linewidth=1, linecolor='#59656d')
     fig15.update_traces(marker_color='#cbf85f', marker_line_color='#cbf85f', marker_line_width=1)
-    fig15.update_layout(title='Total Time Spent to Acknowledged(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
+    fig15.update_layout(title='Total Time Spent to Responded(hrs)-Top 10', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig15, use_container_width=True)
 
 x_fig16 = df_fig16.Type_of_Fault
